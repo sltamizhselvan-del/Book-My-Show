@@ -1,0 +1,21 @@
+---
+- name: Deploy BookMyShow application to EKS
+  hosts: local
+  become: false
+
+  tasks:
+
+    - name: Update EKS kubeconfig
+      shell: |
+        aws eks update-kubeconfig \
+          --region ap-south-1 \
+          --name bookmyshow-cluster
+
+    - name: Apply Kubernetes deployment
+      shell: kubectl apply -f ../deployment.yml
+
+    - name: Apply Kubernetes service
+      shell: kubectl apply -f ../service.yml
+
+    - name: Wait for deployment rollout
+      shell: kubectl rollout status deployment/bms-app
